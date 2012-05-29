@@ -16,6 +16,7 @@
 
     "require": {
         "php":                           ">=5.3.1",
+        "behat/mink":                    "dev-develop",
         "symfony/dom-crawler":           ">=2.0.0,<2.2.0-dev",
         "alexandresalome/php-selenium":  "*"
     },
