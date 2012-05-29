@@ -4,8 +4,6 @@ namespace Tests\Behat\Mink\Driver;
 
 use Behat\Mink\Driver\SeleniumDriver;
 
-require_once 'JavascriptDriverTest.php';
-
 /**
  * @group seleniumdriver
  */
