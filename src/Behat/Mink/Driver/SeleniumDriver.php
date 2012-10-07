@@ -265,6 +265,16 @@ class SeleniumDriver implements DriverInterface
     }
 
     /**
+     * Capture a screenshot of the current window.
+     *
+     * @throws UnsupportedDriverActionException
+     */
+    public function getScreenshot()
+    {
+        throw new UnsupportedDriverActionException('Screenshots are not supported by %s', $this);
+    }
+
+    /**
      * @see Behat\Mink\Driver\DriverInterface::find()
      */
     public function find($xpath)
