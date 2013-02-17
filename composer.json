@@ -16,14 +16,20 @@
 
     "require": {
         "php":                           ">=5.3.1",
-        "behat/mink":                    ">=1.4.0,<1.5.0",
-        "symfony/dom-crawler":           ">=2.0.0,<2.2.0",
-        "alexandresalome/php-selenium":  "@dev"
+        "behat/mink":                    ">=1.4,<1.5-dev",
+        "symfony/dom-crawler":           ">=2.0,<2.2-dev",
+        "alexandresalome/php-selenium":  ">=1.0,<1.2-dev"
     },
 
     "autoload": {
         "psr-0": {
             "Behat\\Mink\\Driver": "src/"
+        }
+    },
+
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
         }
     }
 }
