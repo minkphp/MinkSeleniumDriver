@@ -3,9 +3,9 @@ language: php
 php: [5.3, 5.4, 5.5]
 
 env:
-  - SYMFONY_VERSION='2.0.*'
-  - SYMFONY_VERSION='2.1.*'
-  - SYMFONY_VERSION='2.2.*@dev'
+  - CRAWLER_VERSION='2.0.*'
+  - CRAWLER_VERSION='2.1.*'
+  - CRAWLER_VERSION='2.2.*@dev'
 
 before_script:
   - export WEB_FIXTURES_HOST=http://localhost
@@ -21,8 +21,7 @@ before_script:
   - sleep 4
 
   - curl http://getcomposer.org/installer | php
-  - php composer.phar require --no-update symfony/dom-crawler=$SYMFONY_VERSION
-  - php composer.phar require --no-update symfony/css-selector=$SYMFONY_VERSION
+  - php composer.phar require --no-update symfony/dom-crawler=$CRAWLER_VERSION
   - php composer.phar install --dev --prefer-source
 
   - sudo apt-get update > /dev/null
