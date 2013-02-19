@@ -11,6 +11,7 @@ before_script:
   - sleep 4
 
   - curl http://selenium.googlecode.com/files/selenium-server-standalone-2.30.0.jar > selenium.jar
+  - sudo cat /usr/bin/firefox
   - java -jar selenium.jar > /dev/null &
   - sleep 4
 
