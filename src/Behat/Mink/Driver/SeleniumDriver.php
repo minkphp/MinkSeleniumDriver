@@ -503,6 +503,8 @@ JS;
         if ($readyState == 'loading' || $readyState == 'interactive') {
             $this->browser->waitForPageToLoad($this->timeout);
         }
+
+        $this->getCurrentUrl();
     }
 
     /**
