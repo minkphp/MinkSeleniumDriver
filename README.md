@@ -1,6 +1,8 @@
 Mink Selenium1 Driver
 =====================
 
+- [![Build Status](https://secure.travis-ci.org/Behat/MinkSeleniumDriver.png?branch=master)](http://travis-ci.org/Behat/MinkSeleniumDriver)
+
 Usage Example
 -------------
 
