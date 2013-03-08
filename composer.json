@@ -16,9 +16,9 @@
 
     "require": {
         "php":                           ">=5.3.1",
-        "behat/mink":                    ">=1.4,<1.5-dev",
-        "symfony/dom-crawler":           ">=2.0,<2.4-dev",
-        "alexandresalome/php-selenium":  ">=1.0,<1.2-dev"
+        "behat/mink":                    "~1.4.3",
+        "alexandresalome/php-selenium":  "~1.0.1",
+        "symfony/dom-crawler":           "~2.0"
     },
 
     "autoload": {
