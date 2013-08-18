@@ -451,6 +451,21 @@ JS;
     }
 
     /**
+     * @see Behat\Mink\Driver\DriverInterface::isSelected()
+     */
+    public function isSelected($xpath)
+    {
+        $xpathEscaped = str_replace('"', '\"', $xpath);
+
+        $script = <<<JS
+var node = this.browserbot.locateElementByXPath("$xpathEscaped", window.document);
+node.selected
+JS;
+
+        return $this->browser->getEval($script) == 'true';
+    }
+
+    /**
      * @see Behat\Mink\Driver\DriverInterface::click()
      */
     public function click($xpath)
