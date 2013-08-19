@@ -15,7 +15,7 @@ class SeleniumDriverTest extends JavascriptDriverTest
         $browser = '*'.$_SERVER['WEB_FIXTURES_BROWSER'];
         $baseUrl = $_SERVER['WEB_FIXTURES_HOST'];
 
-        return new SeleniumDriver($browser, $baseUrl, new SeleniumClient('127.0.0.1', 4444));
+        return new SeleniumDriver($browser, $baseUrl, new SeleniumClient($_SERVER['DRIVER_HOST'], $_SERVER['DRIVER_PORT']));
     }
 
     public function testMouseEvents() {} // Right click and blur are not supported
