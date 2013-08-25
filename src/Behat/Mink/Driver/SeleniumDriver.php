@@ -646,4 +646,14 @@ JS;
                 break;
         }
     }
+
+    /**
+     * Submits the form.
+     *
+     * @param string $xpath Xpath.
+     */
+    public function submitForm($xpath)
+    {
+        $this->browser->submit(SeleniumLocator::xpath($xpath));
+    }
 }
