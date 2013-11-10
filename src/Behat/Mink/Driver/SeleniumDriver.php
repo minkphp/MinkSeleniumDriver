@@ -291,7 +291,7 @@ class SeleniumDriver extends CoreDriver
      */
     public function getAttribute($xpath, $name)
     {
-        $result = $this->getCrawler()->filterXPath($xpath)->attr($name);
+        $result = $this->browser->getAttribute(SeleniumLocator::xpath('(' . $xpath . ')@' . $name));
         if ('' === $result) {
             $result = null;
         }
