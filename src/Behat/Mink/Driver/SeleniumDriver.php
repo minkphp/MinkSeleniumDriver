@@ -291,11 +291,16 @@ class SeleniumDriver extends CoreDriver
      */
     public function getAttribute($xpath, $name)
     {
-        $result = $this->getCrawler()->filterXPath($xpath)->attr($name);
-        if ('' === $result) {
-            $result = null;
-        }
-        return $result;
+        $xpathEscaped = json_encode($xpath);
+        $nameEscaped = json_encode((string)$name);
+
+        $script = <<<JS
+var node = this.browserbot.locateElementByXPath($xpathEscaped, window.document);
+
+JSON.stringify(node.getAttribute($nameEscaped))
+JS;
+
+        return json_decode($this->browser->getEval($script), true);
     }
 
     /**
