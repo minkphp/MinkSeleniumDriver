@@ -566,7 +566,13 @@ JS;
      */
     public function dragTo($sourceXpath, $destinationXpath)
     {
-        $this->browser->dragAndDropToObject(SeleniumLocator::xpath($sourceXpath), SeleniumLocator::xpath($destinationXpath));
+        $sourceLocator = SeleniumLocator::xpath($sourceXpath);
+        $destinationLocator = SeleniumLocator::xpath($destinationXpath);
+
+        $this->browser->mouseMoveAt($sourceLocator, '0,0');
+        $this->browser->mouseDownAt($sourceLocator, '0,0');
+        $this->browser->mouseMoveAt($destinationLocator, '0,0');
+        $this->browser->mouseUpAt($destinationLocator, '0,0');
     }
 
     /**
