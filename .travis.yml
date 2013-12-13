@@ -20,9 +20,8 @@ before_script:
   - PATH=$PATH:/usr/lib/firefox java -jar selenium.jar > /dev/null &
   - sleep 4
 
-  - curl http://getcomposer.org/installer | php
-  - php composer.phar require --no-update symfony/dom-crawler=$CRAWLER_VERSION
-  - php composer.phar install --dev --prefer-source
+  - composer require --no-update symfony/dom-crawler=$CRAWLER_VERSION
+  - composer install --dev --prefer-source
 
   - sudo apt-get update > /dev/null
   - sudo apt-get install -y --force-yes apache2 libapache2-mod-php5 > /dev/null
