@@ -2,16 +2,13 @@
 
 namespace Behat\Mink\Driver;
 
-use Behat\Mink\Session,
-    Behat\Mink\Element\NodeElement,
-    Behat\Mink\Exception\DriverException,
-    Behat\Mink\Exception\UnsupportedDriverActionException;
-
+use Behat\Mink\Element\NodeElement;
+use Behat\Mink\Exception\UnsupportedDriverActionException;
+use Behat\Mink\Session;
+use Selenium\Client as SeleniumClient;
+use Selenium\Exception as SeleniumException;
+use Selenium\Locator as SeleniumLocator;
 use Symfony\Component\DomCrawler\Crawler;
-
-use Selenium\Client as SeleniumClient,
-    Selenium\Locator as SeleniumLocator,
-    Selenium\Exception as SeleniumException;
 
 /*
  * This file is part of the Behat\Mink.
@@ -548,7 +545,9 @@ JS;
 
         try {
             $this->browser->waitForCondition($condition, $time);
-        } catch (SeleniumException $e) {}
+        } catch (SeleniumException $e) {
+            // ignore error
+        }
 
         return $this->browser->getEval($condition) == 'true';
     }
