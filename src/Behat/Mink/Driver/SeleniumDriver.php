@@ -206,7 +206,7 @@ class SeleniumDriver extends CoreDriver
     public function setCookie($name, $value = null)
     {
         if (null === $value) {
-            $this->browser->deleteCookie($name, '');
+            $this->browser->deleteCookie($name, 'recurse=true');
         } else {
             $this->browser->createCookie($name.'='.$value, '');
         }
