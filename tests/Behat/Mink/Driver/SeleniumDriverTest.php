@@ -15,13 +15,21 @@ class SeleniumDriverTest extends JavascriptDriverTest
         $browser = '*'.$_SERVER['WEB_FIXTURES_BROWSER'];
         $baseUrl = $_SERVER['WEB_FIXTURES_HOST'];
 
-        return new SeleniumDriver($browser, $baseUrl, new SeleniumClient($_SERVER['DRIVER_HOST'], $_SERVER['DRIVER_PORT']));
+        return new SeleniumDriver(
+            $browser,
+            $baseUrl,
+            new SeleniumClient($_SERVER['DRIVER_HOST'], $_SERVER['DRIVER_PORT'])
+        );
     }
 
-    public function testMouseEvents() {} // Right click and blur are not supported
+    public function testMouseEvents()
+    {
+        $this->markTestIncomplete('testMouseEvents cannot be tested fully for SeleniumDriver. Supported events are currently tested in testOtherMouseEvents');
+    }
 
     public function testOtherMouseEvents()
     {
+        // focus, blur and right click is not supported currently
         $this->getSession()->visit($this->pathTo('/js_test.php'));
 
         $clicker = $this->getSession()->getPage()->find('css', '.elements div#clicker');
@@ -38,8 +46,8 @@ class SeleniumDriverTest extends JavascriptDriverTest
         $this->assertEquals('mouse overed', $clicker->getText());
     }
 
-    /**
-     * Selenium1 doesn't handle selects without values
-     */
-    public function testIssue193() {}
+    public function testIssue193()
+    {
+        $this->markTestSkipped('Selenium1 doesn\'t handle selects without values');
+    }
 }
