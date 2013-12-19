@@ -308,9 +308,9 @@ JS;
         $xpathEscaped = str_replace('"', '\"', $xpath);
         $script = <<<JS
 var node = this.browserbot.locateElementByXPath("$xpathEscaped", window.document),
-    tagName = node.tagName.toUpperCase(),
+    tagName = node.tagName.toLowerCase(),
     value = null;
-if (tagName == 'INPUT' || tagName == 'TEXTAREA') {
+if (tagName == 'input' || tagName == 'textarea') {
     var type = node.getAttribute('type');
     if (type == 'checkbox') {
         value = node.checked;
@@ -330,7 +330,7 @@ if (tagName == 'INPUT' || tagName == 'TEXTAREA') {
     } else {
         value = node.value;
     }
-} else if (tagName == 'SELECT') {
+} else if (tagName == 'select') {
     if (node.getAttribute('multiple')) {
         value = [];
         for (var i = 0; i < node.options.length; i++) {
