@@ -1,7 +1,9 @@
 Mink Selenium1 Driver
 =====================
 
-- [![Build Status](https://secure.travis-ci.org/Behat/MinkSeleniumDriver.png?branch=master)](http://travis-ci.org/Behat/MinkSeleniumDriver)
+[![Latest Stable Version](https://poser.pugx.org/behat/mink-selenium-driver/v/stable.png)](https://packagist.org/packages/behat/mink-selenium-driver)
+[![Total Downloads](https://poser.pugx.org/behat/mink-selenium-driver/downloads.png)](https://packagist.org/packages/behat/mink-selenium-driver)
+[![Build Status](https://secure.travis-ci.org/Behat/MinkSeleniumDriver.png?branch=master)](http://travis-ci.org/Behat/MinkSeleniumDriver)
 
 Usage Example
 -------------
