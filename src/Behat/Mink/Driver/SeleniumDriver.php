@@ -2,9 +2,7 @@
 
 namespace Behat\Mink\Driver;
 
-use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
-use Behat\Mink\Session;
 use Selenium\Client as SeleniumClient;
 use Selenium\Exception as SeleniumException;
 use Selenium\Locator as SeleniumLocator;
@@ -36,13 +34,6 @@ class SeleniumDriver extends CoreDriver
      * @var int
      */
     private $timeout = 60000;
-
-    /**
-     * The current session
-     *
-     * @var \Behat\Mink\Session
-     */
-    private $session;
 
     /**
      * The selenium browser instance
@@ -78,14 +69,6 @@ class SeleniumDriver extends CoreDriver
     public function getBrowser()
     {
         return $this->browser;
-    }
-
-    /**
-     * @see Behat\Mink\Driver\DriverInterface::setSession()
-     */
-    public function setSession(Session $session)
-    {
-        $this->session = $session;
     }
 
     /**
@@ -238,7 +221,7 @@ class SeleniumDriver extends CoreDriver
 
         $elements = array();
         foreach ($nodes as $i => $node) {
-            $elements[] = new NodeElement(sprintf('(%s)[%d]', $xpath, $i + 1), $this->session);
+            $elements[] = sprintf('(%s)[%d]', $xpath, $i + 1);
         }
 
         return $elements;
