@@ -292,9 +292,9 @@ class SeleniumDriver extends CoreDriver
         $nameEscaped = json_encode((string)$name);
 
         $script = <<<JS
-var node = this.browserbot.locateElementByXPath($xpathEscaped, window.document);
+var node = this.browserbot.locateElementByXPath({$xpathEscaped}, window.document);
 
-JSON.stringify(node.getAttribute($nameEscaped))
+JSON.stringify(node.getAttribute({$nameEscaped}))
 JS;
 
         return json_decode($this->browser->getEval($script), true);
@@ -305,9 +305,9 @@ JS;
      */
     public function getValue($xpath)
     {
-        $xpathEscaped = str_replace('"', '\"', $xpath);
+        $xpathEscaped = json_encode($xpath);
         $script = <<<JS
-var node = this.browserbot.locateElementByXPath("$xpathEscaped", window.document),
+var node = this.browserbot.locateElementByXPath({$xpathEscaped}, window.document),
     tagName = node.tagName.toLowerCase(),
     value = null;
 if (tagName == 'input' || tagName == 'textarea') {
@@ -384,8 +384,8 @@ JS;
      */
     public function selectOption($xpath, $value, $multiple = false)
     {
-        $xpathEscaped = str_replace('"', '\"', $xpath);
-        $valueEscaped = str_replace('"', '\"', $value);
+        $xpathEscaped = json_encode($xpath);
+        $valueEscaped = json_encode($value);
         $multipleJS   = $multiple ? 'true' : 'false';
 
         $script = <<<JS
@@ -409,11 +409,11 @@ var triggerEvent = function (element, eventName) {
     }
 }
 
-var node = this.browserbot.locateElementByXPath("$xpathEscaped", window.document);
+var node = this.browserbot.locateElementByXPath({$xpathEscaped}, window.document);
 if (node.tagName == 'SELECT') {
     var i, l = node.length;
     for (i = 0; i < l; i++) {
-        if (node[i].value == "$valueEscaped") {
+        if (node[i].value == {$valueEscaped}) {
             node[i].selected = true;
         } else if (!$multipleJS) {
             node[i].selected = false;
@@ -424,7 +424,7 @@ if (node.tagName == 'SELECT') {
     var nodes = window.document.getElementsByName(node.getAttribute('name'));
     var i, l = nodes.length;
     for (i = 0; i < l; i++) {
-        if (nodes[i].getAttribute('value') == "$valueEscaped") {
+        if (nodes[i].getAttribute('value') == {$valueEscaped}) {
             nodes[i].checked = true;
             break;
         }
@@ -441,10 +441,10 @@ JS;
      */
     public function isSelected($xpath)
     {
-        $xpathEscaped = str_replace('"', '\"', $xpath);
+        $xpathEscaped = json_encode($xpath);
 
         $script = <<<JS
-var node = this.browserbot.locateElementByXPath("$xpathEscaped", window.document);
+var node = this.browserbot.locateElementByXPath({$xpathEscaped}, window.document);
 node.selected
 JS;
 
