@@ -1,11 +1,21 @@
 language: php
 
-php: [5.3, 5.4, 5.5]
+php: [5.3, 5.4, 5.5, hhvm]
+
+matrix:
+  allow_failures:
+    - php: hhvm
+  fast_finish: true
+  exclude:
+    - php: hhvm
+      env: CRAWLER_VERSION='2.3.*'
+    - php: hhvm
+      env: CRAWLER_VERSION='2.5.*@dev'
 
 env:
-  - CRAWLER_VERSION='2.2.*'
   - CRAWLER_VERSION='2.3.*'
-  - CRAWLER_VERSION='2.4.*@dev'
+  - CRAWLER_VERSION='2.4.*'
+  - CRAWLER_VERSION='2.5.*@dev'
 
 before_script:
   - export WEB_FIXTURES_HOST=http://localhost
