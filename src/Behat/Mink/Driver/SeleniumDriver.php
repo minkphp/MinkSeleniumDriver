@@ -457,13 +457,22 @@ JS;
     public function click($xpath)
     {
         $this->browser->click(SeleniumLocator::xpath($xpath));
+
+        $this->detectAndWaitForPageLoad();
+
+        $this->getCurrentUrl();
+    }
+
+    /**
+     * Detects if a new page is loading and waits for it.
+     */
+    private function detectAndWaitForPageLoad()
+    {
         $readyState = $this->browser->getEval('window.document.readyState');
 
         if ($readyState == 'loading' || $readyState == 'interactive') {
             $this->browser->waitForPageToLoad($this->timeout);
         }
-
-        $this->getCurrentUrl();
     }
 
     /**
@@ -506,6 +515,8 @@ JS;
         $this->keyDownModifier($modifier);
         $this->browser->keyPress(SeleniumLocator::xpath($xpath), $char);
         $this->keyUpModifier($modifier);
+
+        $this->detectAndWaitForPageLoad();
     }
 
     /**
