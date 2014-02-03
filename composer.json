@@ -16,7 +16,7 @@
 
     "require": {
         "php":                           ">=5.3.1",
-        "behat/mink":                    "~1.5.0@dev",
+        "behat/mink":                    "~1.5@dev",
         "alexandresalome/php-selenium":  "~1.0.1@dev",
         "symfony/dom-crawler":           "~2.0"
     },
@@ -29,7 +29,7 @@
 
     "extra": {
         "branch-alias": {
-            "dev-master": "1.1.x-dev"
+            "dev-master": "1.2.x-dev"
         }
     }
 }
