@@ -545,6 +545,23 @@ JS;
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function evaluateScript($script)
+    {
+        $script = preg_replace('/^return\s+/', '', $script);
+        $script = preg_replace('/;$/', '', $script);
+
+        if (preg_match('/^function[\s\(]/', $script)) {
+            $script = '(' . $script . ')';
+        }
+
+        $script = sprintf('JSON.stringify(%s)', $script);
+
+        return json_decode($this->browser->getEval($script), true);
+    }
+
+    /**
      * @see Behat\Mink\Driver\DriverInterface::wait()
      */
     public function wait($time, $condition)
