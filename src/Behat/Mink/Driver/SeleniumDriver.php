@@ -491,6 +491,14 @@ JS;
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getScreenshot()
+    {
+        return $this->browser->captureScreenshotToString();
+    }
+
+    /**
      * @see Behat\Mink\Driver\DriverInterface::doubleClick()
      */
     public function doubleClick($xpath)
