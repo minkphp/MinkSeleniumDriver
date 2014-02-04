@@ -29,7 +29,7 @@ class SeleniumDriverTest extends JavascriptDriverTest
 
     public function testOtherMouseEvents()
     {
-        // focus, blur and right click is not supported currently
+        // blur and right click is not supported currently
         $this->getSession()->visit($this->pathTo('/js_test.php'));
 
         $clicker = $this->getSession()->getPage()->find('css', '.elements div#clicker');
@@ -41,6 +41,9 @@ class SeleniumDriverTest extends JavascriptDriverTest
 
         $clicker->doubleClick();
         $this->assertEquals('double clicked', $clicker->getText());
+
+        $clicker->focus();
+        $this->assertEquals('focused', $clicker->getText());
 
         $clicker->mouseOver();
         $this->assertEquals('mouse overed', $clicker->getText());

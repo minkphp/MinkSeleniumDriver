@@ -506,6 +506,11 @@ JS;
         $this->browser->mouseOver(SeleniumLocator::xpath($xpath));
     }
 
+    public function focus($xpath)
+    {
+        $this->browser->focus(SeleniumLocator::xpath($xpath));
+    }
+
     /**
      * @see Behat\Mink\Driver\DriverInterface::keyPress()
      */
