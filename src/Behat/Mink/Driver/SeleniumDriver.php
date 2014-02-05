@@ -541,6 +541,11 @@ JS;
      */
     public function executeScript($script)
     {
+        if (preg_match('/^function[\s\(]/', $script)) {
+            $script = preg_replace('/;$/', '', $script);
+            $script = '(' . $script . ')';
+        }
+
         $this->browser->runScript($script);
     }
 
