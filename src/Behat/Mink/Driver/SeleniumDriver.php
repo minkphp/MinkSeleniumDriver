@@ -487,7 +487,7 @@ JS;
      */
     public function getScreenshot()
     {
-        return $this->browser->captureScreenshotToString();
+        return base64_decode($this->browser->captureScreenshotToString());
     }
 
     /**
