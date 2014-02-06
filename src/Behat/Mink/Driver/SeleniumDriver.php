@@ -604,6 +604,15 @@ JS;
         $this->browser->mouseUpAt($destinationLocator, '0,0');
     }
 
+    public function maximizeWindow($name = null)
+    {
+        if (null !== $name) {
+            throw new UnsupportedDriverActionException('Maximizing a non-default window is not supported by %s', $this);
+        }
+
+        $this->browser->windowMaximize();
+    }
+
     /**
      * Returns crawler instance (got from client).
      *
