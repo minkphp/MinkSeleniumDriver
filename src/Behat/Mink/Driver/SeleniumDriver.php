@@ -569,12 +569,12 @@ JS;
     /**
      * @see Behat\Mink\Driver\DriverInterface::wait()
      */
-    public function wait($time, $condition)
+    public function wait($timeout, $condition)
     {
         $condition = 'with (selenium.browserbot.getCurrentWindow()) { '."\n".$condition."\n }";
 
         try {
-            $this->browser->waitForCondition($condition, $time);
+            $this->browser->waitForCondition($condition, $timeout);
         } catch (SeleniumException $e) {
             // ignore error
         }
