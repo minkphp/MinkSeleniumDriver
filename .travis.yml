@@ -1,26 +1,23 @@
 language: php
 
-php: [5.3, 5.4, 5.5, hhvm]
+php: [5.3, 5.4, 5.5, 5.6, hhvm]
 
 matrix:
   allow_failures:
     - php: hhvm
   fast_finish: true
-  exclude:
-    - php: hhvm
+  include:
+    - php: 5.5
       env: CRAWLER_VERSION='2.3.*'
-    - php: hhvm
+    - php: 5.5
       env: CRAWLER_VERSION='2.5.*@dev'
-
+      
 env:
-  - CRAWLER_VERSION='2.3.*'
-  - CRAWLER_VERSION='2.4.*'
-  - CRAWLER_VERSION='2.5.*@dev'
+  global:
+    - WEB_FIXTURES_HOST=http://localhost
+    - WEB_FIXTURES_BROWSER=firefox
 
 before_script:
-  - export WEB_FIXTURES_HOST=http://localhost
-  - export WEB_FIXTURES_BROWSER=firefox
-
   - sh -e /etc/init.d/xvfb start
   - export DISPLAY=:99.0
   - sleep 4
@@ -30,7 +27,7 @@ before_script:
   - PATH=$PATH:/usr/lib/firefox java -jar selenium.jar > /dev/null &
   - sleep 4
 
-  - composer require --no-update symfony/dom-crawler=$CRAWLER_VERSION
+  - sh -c 'if [ "$CRAWLER_VERSION" != "" ]; then composer require --no-update symfony/dom-crawler=$CRAWLER_VERSION; fi;'
   - composer install --dev --prefer-source
 
   - sudo apt-get update > /dev/null
