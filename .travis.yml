@@ -24,7 +24,7 @@ before_script:
 
   - curl http://selenium.googlecode.com/files/selenium-server-standalone-2.37.0.jar > selenium.jar
   - sudo ln -s /usr/lib/firefox/firefox /usr/lib/firefox/firefox-bin
-  - PATH=$PATH:/usr/lib/firefox java -jar selenium.jar > /dev/null &
+  - PATH=$PATH:/usr/lib/firefox java -jar selenium.jar > /dev/null 2> /tmp/selenium_output.txt &
   - sleep 4
 
   - sh -c 'if [ "$CRAWLER_VERSION" != "" ]; then composer require --no-update symfony/dom-crawler=$CRAWLER_VERSION; fi;'
@@ -41,3 +41,6 @@ script: phpunit -v --coverage-clover=coverage.clover
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
   - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+  
+after_failure:
+  - cat /tmp/selenium_output.txt
