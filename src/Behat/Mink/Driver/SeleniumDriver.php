@@ -3,6 +3,7 @@
 namespace Behat\Mink\Driver;
 
 use Behat\Mink\Element\NodeElement;
+use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Behat\Mink\Session;
 use Selenium\Client as SeleniumClient;
@@ -249,11 +250,7 @@ class SeleniumDriver extends CoreDriver
      */
     public function getTagName($xpath)
     {
-        $nodes = $this->getCrawler()->filterXPath($xpath)->eq(0);
-        $nodes->rewind();
-        $node = $nodes->current();
-
-        return $node->nodeName;
+        return $this->getDomElement($xpath)->nodeName;
     }
 
     /**
@@ -271,11 +268,7 @@ class SeleniumDriver extends CoreDriver
      */
     public function getHtml($xpath)
     {
-        $nodes = $this->getCrawler()->filterXPath($xpath)->eq(0);
-
-        $nodes->rewind();
-        $node = $nodes->current();
-        $text = $node->C14N();
+        $text = $this->getDomElement($xpath)->C14N();
 
         // cut the tag itself (making innerHTML out of outerHTML)
         $text = preg_replace('/^\<[^\>]+\>|\<[^\>]+\>$/', '', $text);
@@ -614,11 +607,9 @@ JS;
     }
 
     /**
-     * Returns crawler instance (got from client).
+     * Returns a crawler instance for the current source.
      *
-     * @return  \Symfony\Component\DomCrawler\Crawler
-     *
-     * @throws  \Behat\Mink\Exception\DriverException    if can't init crawler (no page is opened)
+     * @return Crawler
      */
     private function getCrawler()
     {
@@ -634,6 +625,28 @@ JS;
         $crawler->addContent($content, $contentType);
 
         return $crawler;
+    }
+
+    /**
+     * Returns a DOM element for the given XPath
+     *
+     * @param string $xpath
+     *
+     * @return \DOMElement
+     *
+     * @throws DriverException when the XPath does not match
+     */
+    private function getDomElement($xpath)
+    {
+        $crawler = $this->getCrawler()->filterXPath($xpath);
+
+        if (!count($crawler)) {
+            throw new DriverException(sprintf('There is no element matching XPath "%s"', $xpath));
+        }
+
+        $crawler->rewind();
+
+        return $crawler->current();
     }
 
     /**
