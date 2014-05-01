@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of the Behat\Mink.
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Behat\Mink\Driver;
 
 use Behat\Mink\Element\NodeElement;
@@ -10,14 +18,6 @@ use Selenium\Client as SeleniumClient;
 use Selenium\Exception as SeleniumException;
 use Selenium\Locator as SeleniumLocator;
 use Symfony\Component\DomCrawler\Crawler;
-
-/*
- * This file is part of the Behat\Mink.
- * (c) Konstantin Kudryashov <ever.zet@gmail.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 /**
  * Selenium driver.
@@ -41,7 +41,7 @@ class SeleniumDriver extends CoreDriver
     /**
      * The current session
      *
-     * @var \Behat\Mink\Session
+     * @var Session
      */
     private $session;
 
@@ -55,12 +55,12 @@ class SeleniumDriver extends CoreDriver
     /**
      * Flag indicating if the browser is started
      *
-     * @var boolean
+     * @var bool
      */
     private $started = false;
 
     /**
-     * Instanciates the driver.
+     * Instantiates the driver.
      *
      * @param string         $browser Browser name
      * @param string         $baseUrl Base URL for testing
@@ -74,7 +74,7 @@ class SeleniumDriver extends CoreDriver
     /**
      * Returns Selenium browser instance.
      *
-     * @return  \Selenium\Browser
+     * @return \Selenium\Browser
      */
     public function getBrowser()
     {
@@ -82,7 +82,7 @@ class SeleniumDriver extends CoreDriver
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::setSession()
+     * {@inheritdoc}
      */
     public function setSession(Session $session)
     {
@@ -90,7 +90,7 @@ class SeleniumDriver extends CoreDriver
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::start()
+     * {@inheritdoc}
      */
     public function start()
     {
@@ -99,7 +99,7 @@ class SeleniumDriver extends CoreDriver
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::isStarted()
+     * {@inheritdoc}
      */
     public function isStarted()
     {
@@ -107,18 +107,18 @@ class SeleniumDriver extends CoreDriver
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::stop()
+     * {@inheritdoc}
      */
     public function stop()
     {
-        if (true === $this->started) {
+        if ($this->started) {
             $this->browser->stop();
         }
         $this->started = false;
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::reset()
+     * {@inheritdoc}
      */
     public function reset()
     {
@@ -126,7 +126,7 @@ class SeleniumDriver extends CoreDriver
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::visit()
+     * {@inheritdoc}
      */
     public function visit($url)
     {
@@ -137,7 +137,7 @@ class SeleniumDriver extends CoreDriver
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::getCurrentUrl()
+     * {@inheritdoc}
      */
     public function getCurrentUrl()
     {
@@ -145,7 +145,7 @@ class SeleniumDriver extends CoreDriver
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::reload()
+     * {@inheritdoc}
      */
     public function reload()
     {
@@ -156,7 +156,7 @@ class SeleniumDriver extends CoreDriver
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::forward()
+     * {@inheritdoc}
      */
     public function forward()
     {
@@ -167,7 +167,7 @@ class SeleniumDriver extends CoreDriver
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::back()
+     * {@inheritdoc}
      */
     public function back()
     {
@@ -175,9 +175,7 @@ class SeleniumDriver extends CoreDriver
     }
 
     /**
-     * Switches to specific browser window.
-     *
-     * @param string $name window name (null for switching back to main window)
+     * {@inheritdoc}
      */
     public function switchToWindow($name = null)
     {
@@ -185,9 +183,7 @@ class SeleniumDriver extends CoreDriver
     }
 
     /**
-     * Switches to specific iFrame.
-     *
-     * @param string $name iframe name (null for switching back)
+     * {@inheritdoc}
      */
     public function switchToIFrame($name = null)
     {
@@ -199,7 +195,7 @@ class SeleniumDriver extends CoreDriver
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::setCookie()
+     * {@inheritdoc}
      */
     public function setCookie($name, $value = null)
     {
@@ -211,7 +207,7 @@ class SeleniumDriver extends CoreDriver
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::getCookie()
+     * {@inheritdoc}
      */
     public function getCookie($name)
     {
@@ -223,7 +219,7 @@ class SeleniumDriver extends CoreDriver
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::getContent()
+     * {@inheritdoc}
      */
     public function getContent()
     {
@@ -231,7 +227,7 @@ class SeleniumDriver extends CoreDriver
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::find()
+     * {@inheritdoc}
      */
     public function find($xpath)
     {
@@ -246,7 +242,7 @@ class SeleniumDriver extends CoreDriver
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::getTagName()
+     * {@inheritdoc}
      */
     public function getTagName($xpath)
     {
@@ -254,7 +250,7 @@ class SeleniumDriver extends CoreDriver
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::getText()
+     * {@inheritdoc}
      */
     public function getText($xpath)
     {
@@ -264,7 +260,7 @@ class SeleniumDriver extends CoreDriver
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::getHtml()
+     * {@inheritdoc}
      */
     public function getHtml($xpath)
     {
@@ -277,7 +273,7 @@ class SeleniumDriver extends CoreDriver
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::getAttribute()
+     * {@inheritdoc}
      */
     public function getAttribute($xpath, $name)
     {
@@ -294,7 +290,7 @@ JS;
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::getValue()
+     * {@inheritdoc}
      */
     public function getValue($xpath)
     {
@@ -349,7 +345,7 @@ JS;
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::setValue()
+     * {@inheritdoc}
      */
     public function setValue($xpath, $value)
     {
@@ -357,7 +353,7 @@ JS;
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::check()
+     * {@inheritdoc}
      */
     public function check($xpath)
     {
@@ -365,7 +361,7 @@ JS;
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::uncheck()
+     * {@inheritdoc}
      */
     public function uncheck($xpath)
     {
@@ -373,7 +369,7 @@ JS;
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::selectOption()
+     * {@inheritdoc}
      */
     public function selectOption($xpath, $value, $multiple = false)
     {
@@ -426,11 +422,10 @@ if (node.tagName == 'SELECT') {
 JS;
 
         $this->browser->getEval($script);
-
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::isSelected()
+     * {@inheritdoc}
      */
     public function isSelected($xpath)
     {
@@ -445,7 +440,7 @@ JS;
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::click()
+     * {@inheritdoc}
      */
     public function click($xpath)
     {
@@ -460,7 +455,7 @@ JS;
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::isChecked()
+     * {@inheritdoc}
      */
     public function isChecked($xpath)
     {
@@ -468,7 +463,7 @@ JS;
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::attachFile()
+     * {@inheritdoc}
      */
     public function attachFile($xpath, $path)
     {
@@ -484,7 +479,7 @@ JS;
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::doubleClick()
+     * {@inheritdoc}
      */
     public function doubleClick($xpath)
     {
@@ -492,7 +487,7 @@ JS;
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::mouseOver()
+     * {@inheritdoc}
      */
     public function mouseOver($xpath)
     {
@@ -500,7 +495,7 @@ JS;
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::keyPress()
+     * {@inheritdoc}
      */
     public function keyPress($xpath, $char, $modifier = null)
     {
@@ -510,7 +505,7 @@ JS;
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::keyPress()
+     * {@inheritdoc}
      */
     public function keyDown($xpath, $char, $modifier = null)
     {
@@ -520,7 +515,7 @@ JS;
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::keyPress()
+     * {@inheritdoc}
      */
     public function keyUp($xpath, $char, $modifier = null)
     {
@@ -530,7 +525,7 @@ JS;
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::executeScript()
+     * {@inheritdoc}
      */
     public function executeScript($script)
     {
@@ -560,7 +555,7 @@ JS;
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::wait()
+     * {@inheritdoc}
      */
     public function wait($timeout, $condition)
     {
@@ -576,7 +571,7 @@ JS;
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::isVisible()
+     * {@inheritdoc}
      */
     public function isVisible($xpath)
     {
@@ -584,7 +579,7 @@ JS;
     }
 
     /**
-     * @see Behat\Mink\Driver\DriverInterface::dragTo()
+     * {@inheritdoc}
      */
     public function dragTo($sourceXpath, $destinationXpath)
     {
@@ -597,6 +592,9 @@ JS;
         $this->browser->mouseUpAt($destinationLocator, '0,0');
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function maximizeWindow($name = null)
     {
         if (null !== $name) {
@@ -694,9 +692,7 @@ JS;
     }
 
     /**
-     * Submits the form.
-     *
-     * @param string $xpath Xpath.
+     * {@inheritdoc}
      */
     public function submitForm($xpath)
     {
