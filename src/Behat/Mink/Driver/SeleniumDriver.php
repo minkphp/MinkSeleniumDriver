@@ -264,12 +264,27 @@ class SeleniumDriver extends CoreDriver
      */
     public function getHtml($xpath)
     {
-        $text = $this->getDomElement($xpath)->C14N();
-
         // cut the tag itself (making innerHTML out of outerHTML)
-        $text = preg_replace('/^\<[^\>]+\>|\<[^\>]+\>$/', '', $text);
+        return preg_replace('/^\<[^\>]+\>|\<[^\>]+\>$/', '', $this->getOuterHtml($xpath));
+    }
 
-        return $text;
+    /**
+     * {@inheritdoc}
+     */
+    public function getOuterHtml($xpath)
+    {
+        $node = $this->getDomElement($xpath);
+
+        if (version_compare(PHP_VERSION, '5.3.6', '>=')) {
+            // node parameter was added to the saveHTML() method in PHP 5.3.6
+            // @see http://php.net/manual/en/domdocument.savehtml.php
+            return $node->ownerDocument->saveHTML($node);
+        }
+
+        $document = new \DOMDocument('1.0', 'UTF-8');
+        $document->appendChild($document->importNode($node, true));
+
+        return rtrim($document->saveHTML());
     }
 
     /**
