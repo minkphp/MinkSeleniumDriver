@@ -273,7 +273,18 @@ class SeleniumDriver extends CoreDriver
      */
     public function getOuterHtml($xpath)
     {
-        return $this->getDomElement($xpath)->C14N();
+        $node = $this->getDomElement($xpath);
+
+        if (version_compare(PHP_VERSION, '5.3.6', '>=')) {
+            // node parameter was added to the saveHTML() method in PHP 5.3.6
+            // @see http://php.net/manual/en/domdocument.savehtml.php
+            return $node->ownerDocument->saveHTML($node);
+        }
+
+        $document = new \DOMDocument('1.0', 'UTF-8');
+        $document->appendChild($document->importNode($node, true));
+
+        return rtrim($document->saveHTML());
     }
 
     /**
