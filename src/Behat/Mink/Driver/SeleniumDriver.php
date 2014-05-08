@@ -264,12 +264,16 @@ class SeleniumDriver extends CoreDriver
      */
     public function getHtml($xpath)
     {
-        $text = $this->getDomElement($xpath)->C14N();
-
         // cut the tag itself (making innerHTML out of outerHTML)
-        $text = preg_replace('/^\<[^\>]+\>|\<[^\>]+\>$/', '', $text);
+        return preg_replace('/^\<[^\>]+\>|\<[^\>]+\>$/', '', $this->getOuterHtml($xpath));
+    }
 
-        return $text;
+    /**
+     * {@inheritdoc}
+     */
+    public function getOuterHtml($xpath)
+    {
+        return $this->getDomElement($xpath)->C14N();
     }
 
     /**
