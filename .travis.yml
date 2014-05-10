@@ -11,7 +11,7 @@ matrix:
       env: CRAWLER_VERSION='2.3.*'
     - php: 5.5
       env: CRAWLER_VERSION='2.5.*@dev'
-      
+
 env:
   global:
     - WEB_FIXTURES_HOST=http://localhost
@@ -32,7 +32,7 @@ before_script:
 
   - sudo apt-get update > /dev/null
   - sudo apt-get install -y --force-yes apache2 libapache2-mod-php5 > /dev/null
-  - sudo sed -i -e "s,/var/www,$(pwd)/vendor/behat/mink/tests/Behat/Mink/Driver/web-fixtures,g" /etc/apache2/sites-available/default
+  - sudo sed -i -e "s,/var/www,$(pwd)/vendor/behat/mink/driver-testsuite/web-fixtures,g" /etc/apache2/sites-available/default
   - sudo /etc/init.d/apache2 restart
 
 
@@ -41,6 +41,6 @@ script: phpunit -v --coverage-clover=coverage.clover
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
   - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
-  
+
 after_failure:
   - cat /tmp/selenium_output.txt
