@@ -317,7 +317,7 @@ var node = this.browserbot.locateElementByXPath({$xpathEscaped}, window.document
 if (tagName == 'input' || tagName == 'textarea') {
     var type = node.getAttribute('type');
     if (type == 'checkbox') {
-        value = node.checked;
+        value = node.checked ? node.value : null;
     } else if (type == 'radio') {
         var name = node.getAttribute('name');
         if (name) {
