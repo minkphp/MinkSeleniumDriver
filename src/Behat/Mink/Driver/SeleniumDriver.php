@@ -231,10 +231,10 @@ class SeleniumDriver extends CoreDriver
      */
     public function find($xpath)
     {
-        $nodes = $this->getCrawler()->filterXPath($xpath);
+        $count = $this->browser->getXpathCount(utf8_decode($xpath));
 
         $elements = array();
-        foreach ($nodes as $i => $node) {
+        for ($i = 0; $i < $count; $i++) {
             $elements[] = new NodeElement(sprintf('(%s)[%d]', $xpath, $i + 1), $this->session);
         }
 
