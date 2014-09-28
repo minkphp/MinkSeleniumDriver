@@ -314,28 +314,32 @@ JS;
 var node = this.browserbot.locateElementByXPath({$xpathEscaped}, window.document),
     tagName = node.tagName.toLowerCase(),
     value = null;
-if (tagName == 'input' || tagName == 'textarea') {
-    var type = node.getAttribute('type');
-    if (type == 'checkbox') {
+if (tagName === 'input') {
+    var type = node.type.toLowerCase();
+    if (type === 'checkbox') {
         value = node.checked ? node.value : null;
-    } else if (type == 'radio') {
-        var name = node.getAttribute('name');
-        if (name) {
-            var fields = window.document.getElementsByName(name),
-                i, l = fields.length;
-            for (i = 0; i < l; i++) {
-                var field = fields.item(i);
-                if (field.checked) {
-                    value = field.value;
-                    break;
+    } else if (type === 'radio') {
+        if (node.checked) {
+            value = node.value;
+        } else {
+            var name = node.getAttribute('name');
+            if (name) {
+                var formElements = node.form.elements,
+                    element;
+                for (var i = 0; i < formElements.length; i++) {
+                    element = formElements[i];
+                    if (element.type.toLowerCase() == 'radio' && element.getAttribute('name') === name && element.checked) {
+                        value = element.value;
+                        break;
+                    }
                 }
             }
         }
     } else {
         value = node.value;
     }
-} else if (tagName == 'select') {
-    if (node.getAttribute('multiple')) {
+} else if (tagName === 'select') {
+    if (node.multiple) {
         value = [];
         for (var i = 0; i < node.options.length; i++) {
             if (node.options[i].selected) {
@@ -346,12 +350,10 @@ if (tagName == 'input' || tagName == 'textarea') {
         var idx = node.selectedIndex;
         if (idx >= 0) {
             value = node.options.item(idx).value;
-        } else {
-            value = null;
         }
     }
 } else {
-  value = node.getAttribute('value');
+  value = node.value;
 }
 JSON.stringify(value)
 JS;
@@ -390,7 +392,7 @@ JS;
     {
         $xpathEscaped = json_encode($xpath);
         $valueEscaped = json_encode($value);
-        $multipleJS   = $multiple ? 'true' : 'false';
+        $multipleJS   = json_encode((bool) $multiple);
 
         $script = <<<JS
 // Function to triger an event. Cross-browser compliant. See http://stackoverflow.com/a/2490876/135494
