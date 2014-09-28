@@ -417,23 +417,49 @@ var triggerEvent = function (element, eventName) {
 
 var node = this.browserbot.locateElementByXPath({$xpathEscaped}, window.document);
 if (node.tagName == 'SELECT') {
-    var i, l = node.length;
+    var i, option, l = node.options.length;
     for (i = 0; i < l; i++) {
-        if (node[i].value == {$valueEscaped}) {
-            node[i].selected = true;
-        } else if (!$multipleJS) {
-            node[i].selected = false;
+        option = node.options[i];
+        if (option.value == {$valueEscaped}) {
+            option.selected = true;
+        } else if (node.multiple && !$multipleJS) {
+            option.selected = false;
         }
     }
     triggerEvent(node, 'change');
+} else if (node.tagName != 'INPUT' || node.type.toLowerCase() !== 'radio') {
+    throw new Error('The element is not a radio group or select.');
+} else if (node.value == {$valueEscaped}) {
+    if (!node.checked) {
+        node.checked = true;
+        triggerEvent(node, 'change');
+    }
 } else {
-    var nodes = window.document.getElementsByName(node.getAttribute('name'));
-    var i, l = nodes.length;
-    for (i = 0; i < l; i++) {
-        if (nodes[i].getAttribute('value') == {$valueEscaped}) {
-            nodes[i].checked = true;
-            break;
+    var formElements = node.form.elements,
+        name = node.getAttribute('name'),
+        found = false,
+        element;
+
+    if (!name) {
+        throw new Error('The radio button does not have the value "' + value + '"');
+    }
+
+    for (var i = 0; i < formElements.length; i++) {
+        element = formElements[i];
+        if (element.tagName === 'INPUT' && element.type.toLowerCase() == 'radio' && element.name === name) {
+            if ({$valueEscaped} === element.value) {
+                found = true;
+                if (!element.checked) {
+                    element.checked = true;
+                    triggerEvent(element, 'change');
+                }
+                break;
+            }
         }
+    }
+
+    if (!found) {
+        throw new Error('The radio group "' + name + '" does not have an option "' + value + '"');
     }
 }
 JS;
