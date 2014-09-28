@@ -366,6 +366,91 @@ JS;
      */
     public function setValue($xpath, $value)
     {
+        $node = $this->getDomElement($xpath);
+
+        if ('select' === $node->tagName) {
+            $xpathEscaped = json_encode($xpath);
+            $valueEscaped = json_encode($value);
+
+            $script = <<<JS
+// Function to triger an event. Cross-browser compliant. See http://stackoverflow.com/a/2490876/135494
+var triggerEvent = function (element, eventName) {
+    var event;
+    if (document.createEvent) {
+        event = document.createEvent("HTMLEvents");
+        event.initEvent(eventName, true, true);
+    } else {
+        event = document.createEventObject();
+        event.eventType = eventName;
+    }
+
+    event.eventName = eventName;
+
+    if (document.createEvent) {
+        element.dispatchEvent(event);
+    } else {
+        element.fireEvent("on" + event.eventType, event);
+    }
+}
+
+var node = this.browserbot.locateElementByXPath({$xpathEscaped}, window.document);
+var hasChanged = false;
+if (node.multiple) {
+    var i, option, l = node.options.length;
+    var values = {$valueEscaped};
+    for (i = 0; i < l; i++) {
+        option = node.options[i];
+        if (option.selected && -1 === values.indexOf(option.value)) {
+            option.selected = false;
+            hasChanged = true;
+        } else if (!option.selected && -1 !== values.indexOf(option.value)) {
+            option.selected = true;
+            hasChanged = true;
+        }
+    }
+    if (hasChanged) {
+        triggerEvent(node, 'change');
+    }
+} else {
+    var i, option, l = node.options.length;
+    for (i = 0; i < l; i++) {
+        option = node.options[i];
+        if (option.value == {$valueEscaped}) {
+            if (!option.selected) {
+                option.selected = true;
+                triggerEvent(node, 'change');
+            }
+            break;
+        }
+    }
+}
+JS;
+
+            $this->browser->getEval($script);
+
+            return;
+        }
+
+        if ('input' === $node->tagName) {
+            $type = $node->hasAttribute('type') ? strtolower($node->getAttribute('type')) : 'text';
+
+            if ('checkbox' === $type) {
+                if ($value) {
+                    $this->check($xpath);
+                } else {
+                    $this->uncheck($xpath);
+                }
+
+                return;
+            }
+
+            if ('radio' ===  $type) {
+                $this->selectOption($xpath, $value);
+
+                return;
+            }
+        }
+
         $this->browser->type(SeleniumLocator::xpath($xpath), $value);
     }
 
