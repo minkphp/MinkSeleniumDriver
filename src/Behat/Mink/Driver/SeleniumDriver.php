@@ -375,6 +375,7 @@ JS;
             $script = <<<JS
 // Function to triger an event. Cross-browser compliant. See http://stackoverflow.com/a/2490876/135494
 var triggerEvent = function (element, eventName) {
+    var document = element.ownerDocument;
     var event;
     if (document.createEvent) {
         event = document.createEvent("HTMLEvents");
@@ -482,6 +483,7 @@ JS;
         $script = <<<JS
 // Function to triger an event. Cross-browser compliant. See http://stackoverflow.com/a/2490876/135494
 var triggerEvent = function (element, eventName) {
+    var document = element.ownerDocument;
     var event;
     if (document.createEvent) {
         event = document.createEvent("HTMLEvents");
