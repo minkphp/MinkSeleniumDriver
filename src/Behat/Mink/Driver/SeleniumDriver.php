@@ -254,7 +254,7 @@ class SeleniumDriver extends CoreDriver
      */
     public function getText($xpath)
     {
-        $result = $this->browser->getText(SeleniumLocator::xpath($xpath));
+        $result = $this->browser->getText(SeleniumLocator::xpath(utf8_decode($xpath)));
 
         return preg_replace("/[ \n]+/", " ", $result);
     }
@@ -451,7 +451,7 @@ JS;
             }
         }
 
-        $this->browser->type(SeleniumLocator::xpath($xpath), $value);
+        $this->browser->type(SeleniumLocator::xpath(utf8_decode($xpath)), $value);
     }
 
     /**
@@ -459,7 +459,7 @@ JS;
      */
     public function check($xpath)
     {
-        $this->browser->check(SeleniumLocator::xpath($xpath));
+        $this->browser->check(SeleniumLocator::xpath(utf8_decode($xpath)));
     }
 
     /**
@@ -467,7 +467,7 @@ JS;
      */
     public function uncheck($xpath)
     {
-        $this->browser->uncheck(SeleniumLocator::xpath($xpath));
+        $this->browser->uncheck(SeleniumLocator::xpath(utf8_decode($xpath)));
     }
 
     /**
@@ -572,7 +572,7 @@ JS;
      */
     public function click($xpath)
     {
-        $this->browser->click(SeleniumLocator::xpath($xpath));
+        $this->browser->click(SeleniumLocator::xpath(utf8_decode($xpath)));
         $readyState = $this->browser->getEval('window.document.readyState');
 
         if ($readyState == 'loading' || $readyState == 'interactive') {
@@ -587,7 +587,7 @@ JS;
      */
     public function isChecked($xpath)
     {
-        return $this->browser->isChecked(SeleniumLocator::xpath($xpath));
+        return $this->browser->isChecked(SeleniumLocator::xpath(utf8_decode($xpath)));
     }
 
     /**
@@ -595,7 +595,7 @@ JS;
      */
     public function attachFile($xpath, $path)
     {
-        $this->browser->attachFile(SeleniumLocator::xpath($xpath), 'file://'.$path);
+        $this->browser->attachFile(SeleniumLocator::xpath(utf8_decode($xpath)), 'file://'.$path);
     }
 
     /**
@@ -611,7 +611,7 @@ JS;
      */
     public function doubleClick($xpath)
     {
-        $this->browser->doubleClick(SeleniumLocator::xpath($xpath));
+        $this->browser->doubleClick(SeleniumLocator::xpath(utf8_decode($xpath)));
     }
 
     /**
@@ -619,7 +619,7 @@ JS;
      */
     public function mouseOver($xpath)
     {
-        $this->browser->mouseOver(SeleniumLocator::xpath($xpath));
+        $this->browser->mouseOver(SeleniumLocator::xpath(utf8_decode($xpath)));
     }
 
     /**
@@ -628,7 +628,7 @@ JS;
     public function keyPress($xpath, $char, $modifier = null)
     {
         $this->keyDownModifier($modifier);
-        $this->browser->keyPress(SeleniumLocator::xpath($xpath), $char);
+        $this->browser->keyPress(SeleniumLocator::xpath(utf8_decode($xpath)), $char);
         $this->keyUpModifier($modifier);
     }
 
@@ -638,7 +638,7 @@ JS;
     public function keyDown($xpath, $char, $modifier = null)
     {
         $this->keyDownModifier($modifier);
-        $this->browser->keyDown(SeleniumLocator::xpath($xpath), $char);
+        $this->browser->keyDown(SeleniumLocator::xpath(utf8_decode($xpath)), $char);
         $this->keyUpModifier($modifier);
     }
 
@@ -648,7 +648,7 @@ JS;
     public function keyUp($xpath, $char, $modifier = null)
     {
         $this->keyDownModifier($modifier);
-        $this->browser->keyUp(SeleniumLocator::xpath($xpath), $char);
+        $this->browser->keyUp(SeleniumLocator::xpath(utf8_decode($xpath)), $char);
         $this->keyUpModifier($modifier);
     }
 
@@ -703,7 +703,7 @@ JS;
      */
     public function isVisible($xpath)
     {
-        return $this->browser->isVisible(SeleniumLocator::xpath($xpath));
+        return $this->browser->isVisible(SeleniumLocator::xpath(utf8_decode($xpath)));
     }
 
     /**
@@ -824,6 +824,6 @@ JS;
      */
     public function submitForm($xpath)
     {
-        $this->browser->submit(SeleniumLocator::xpath($xpath));
+        $this->browser->submit(SeleniumLocator::xpath(utf8_decode($xpath)));
     }
 }
