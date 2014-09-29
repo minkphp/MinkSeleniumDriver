@@ -26,19 +26,4 @@ class SeleniumConfig extends AbstractConfig
             new SeleniumClient($_SERVER['DRIVER_HOST'], $_SERVER['DRIVER_PORT'])
         );
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function skipMessage($testCase, $test)
-    {
-        if (
-            'Behat\Mink\Tests\Driver\Js\JavascriptTest' === $testCase
-            && 'testIssue193' === $test
-        ) {
-            return 'Selenium1 doesn\'t handle selects without values';
-        }
-
-        return parent::skipMessage($testCase, $test);
-    }
 }

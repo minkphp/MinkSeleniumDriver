@@ -231,10 +231,10 @@ class SeleniumDriver extends CoreDriver
      */
     public function find($xpath)
     {
-        $nodes = $this->getCrawler()->filterXPath($xpath);
+        $count = $this->browser->getXpathCount(utf8_decode($xpath));
 
         $elements = array();
-        foreach ($nodes as $i => $node) {
+        for ($i = 0; $i < $count; $i++) {
             $elements[] = new NodeElement(sprintf('(%s)[%d]', $xpath, $i + 1), $this->session);
         }
 
@@ -254,7 +254,7 @@ class SeleniumDriver extends CoreDriver
      */
     public function getText($xpath)
     {
-        $result = $this->browser->getText(SeleniumLocator::xpath($xpath));
+        $result = $this->browser->getText(SeleniumLocator::xpath(utf8_decode($xpath)));
 
         return preg_replace("/[ \n]+/", " ", $result);
     }
@@ -314,28 +314,32 @@ JS;
 var node = this.browserbot.locateElementByXPath({$xpathEscaped}, window.document),
     tagName = node.tagName.toLowerCase(),
     value = null;
-if (tagName == 'input' || tagName == 'textarea') {
-    var type = node.getAttribute('type');
-    if (type == 'checkbox') {
+if (tagName === 'input') {
+    var type = node.type.toLowerCase();
+    if (type === 'checkbox') {
         value = node.checked ? node.value : null;
-    } else if (type == 'radio') {
-        var name = node.getAttribute('name');
-        if (name) {
-            var fields = window.document.getElementsByName(name),
-                i, l = fields.length;
-            for (i = 0; i < l; i++) {
-                var field = fields.item(i);
-                if (field.checked) {
-                    value = field.value;
-                    break;
+    } else if (type === 'radio') {
+        if (node.checked) {
+            value = node.value;
+        } else {
+            var name = node.getAttribute('name');
+            if (name) {
+                var formElements = node.form.elements,
+                    element;
+                for (var i = 0; i < formElements.length; i++) {
+                    element = formElements[i];
+                    if (element.type.toLowerCase() == 'radio' && element.getAttribute('name') === name && element.checked) {
+                        value = element.value;
+                        break;
+                    }
                 }
             }
         }
     } else {
         value = node.value;
     }
-} else if (tagName == 'select') {
-    if (node.getAttribute('multiple')) {
+} else if (tagName === 'select') {
+    if (node.multiple) {
         value = [];
         for (var i = 0; i < node.options.length; i++) {
             if (node.options[i].selected) {
@@ -346,12 +350,10 @@ if (tagName == 'input' || tagName == 'textarea') {
         var idx = node.selectedIndex;
         if (idx >= 0) {
             value = node.options.item(idx).value;
-        } else {
-            value = null;
         }
     }
 } else {
-  value = node.getAttribute('value');
+  value = node.value;
 }
 JSON.stringify(value)
 JS;
@@ -364,7 +366,93 @@ JS;
      */
     public function setValue($xpath, $value)
     {
-        $this->browser->type(SeleniumLocator::xpath($xpath), $value);
+        $node = $this->getDomElement($xpath);
+
+        if ('select' === $node->tagName) {
+            $xpathEscaped = json_encode($xpath);
+            $valueEscaped = json_encode($value);
+
+            $script = <<<JS
+// Function to triger an event. Cross-browser compliant. See http://stackoverflow.com/a/2490876/135494
+var triggerEvent = function (element, eventName) {
+    var document = element.ownerDocument;
+    var event;
+    if (document.createEvent) {
+        event = document.createEvent("HTMLEvents");
+        event.initEvent(eventName, true, true);
+    } else {
+        event = document.createEventObject();
+        event.eventType = eventName;
+    }
+
+    event.eventName = eventName;
+
+    if (document.createEvent) {
+        element.dispatchEvent(event);
+    } else {
+        element.fireEvent("on" + event.eventType, event);
+    }
+}
+
+var node = this.browserbot.locateElementByXPath({$xpathEscaped}, window.document);
+var hasChanged = false;
+if (node.multiple) {
+    var i, option, l = node.options.length;
+    var values = {$valueEscaped};
+    for (i = 0; i < l; i++) {
+        option = node.options[i];
+        if (option.selected && -1 === values.indexOf(option.value)) {
+            option.selected = false;
+            hasChanged = true;
+        } else if (!option.selected && -1 !== values.indexOf(option.value)) {
+            option.selected = true;
+            hasChanged = true;
+        }
+    }
+    if (hasChanged) {
+        triggerEvent(node, 'change');
+    }
+} else {
+    var i, option, l = node.options.length;
+    for (i = 0; i < l; i++) {
+        option = node.options[i];
+        if (option.value == {$valueEscaped}) {
+            if (!option.selected) {
+                option.selected = true;
+                triggerEvent(node, 'change');
+            }
+            break;
+        }
+    }
+}
+JS;
+
+            $this->browser->getEval($script);
+
+            return;
+        }
+
+        if ('input' === $node->tagName) {
+            $type = $node->hasAttribute('type') ? strtolower($node->getAttribute('type')) : 'text';
+
+            if ('checkbox' === $type) {
+                if ($value) {
+                    $this->check($xpath);
+                } else {
+                    $this->uncheck($xpath);
+                }
+
+                return;
+            }
+
+            if ('radio' ===  $type) {
+                $this->selectOption($xpath, $value);
+
+                return;
+            }
+        }
+
+        $this->browser->type(SeleniumLocator::xpath(utf8_decode($xpath)), $value);
     }
 
     /**
@@ -372,7 +460,7 @@ JS;
      */
     public function check($xpath)
     {
-        $this->browser->check(SeleniumLocator::xpath($xpath));
+        $this->browser->check(SeleniumLocator::xpath(utf8_decode($xpath)));
     }
 
     /**
@@ -380,7 +468,7 @@ JS;
      */
     public function uncheck($xpath)
     {
-        $this->browser->uncheck(SeleniumLocator::xpath($xpath));
+        $this->browser->uncheck(SeleniumLocator::xpath(utf8_decode($xpath)));
     }
 
     /**
@@ -390,11 +478,12 @@ JS;
     {
         $xpathEscaped = json_encode($xpath);
         $valueEscaped = json_encode($value);
-        $multipleJS   = $multiple ? 'true' : 'false';
+        $multipleJS   = json_encode((bool) $multiple);
 
         $script = <<<JS
 // Function to triger an event. Cross-browser compliant. See http://stackoverflow.com/a/2490876/135494
 var triggerEvent = function (element, eventName) {
+    var document = element.ownerDocument;
     var event;
     if (document.createEvent) {
         event = document.createEvent("HTMLEvents");
@@ -415,23 +504,49 @@ var triggerEvent = function (element, eventName) {
 
 var node = this.browserbot.locateElementByXPath({$xpathEscaped}, window.document);
 if (node.tagName == 'SELECT') {
-    var i, l = node.length;
+    var i, option, l = node.options.length;
     for (i = 0; i < l; i++) {
-        if (node[i].value == {$valueEscaped}) {
-            node[i].selected = true;
-        } else if (!$multipleJS) {
-            node[i].selected = false;
+        option = node.options[i];
+        if (option.value == {$valueEscaped}) {
+            option.selected = true;
+        } else if (node.multiple && !$multipleJS) {
+            option.selected = false;
         }
     }
     triggerEvent(node, 'change');
+} else if (node.tagName != 'INPUT' || node.type.toLowerCase() !== 'radio') {
+    throw new Error('The element is not a radio group or select.');
+} else if (node.value == {$valueEscaped}) {
+    if (!node.checked) {
+        node.checked = true;
+        triggerEvent(node, 'change');
+    }
 } else {
-    var nodes = window.document.getElementsByName(node.getAttribute('name'));
-    var i, l = nodes.length;
-    for (i = 0; i < l; i++) {
-        if (nodes[i].getAttribute('value') == {$valueEscaped}) {
-            nodes[i].checked = true;
-            break;
+    var formElements = node.form.elements,
+        name = node.getAttribute('name'),
+        found = false,
+        element;
+
+    if (!name) {
+        throw new Error('The radio button does not have the value "' + value + '"');
+    }
+
+    for (var i = 0; i < formElements.length; i++) {
+        element = formElements[i];
+        if (element.tagName === 'INPUT' && element.type.toLowerCase() == 'radio' && element.name === name) {
+            if ({$valueEscaped} === element.value) {
+                found = true;
+                if (!element.checked) {
+                    element.checked = true;
+                    triggerEvent(element, 'change');
+                }
+                break;
+            }
         }
+    }
+
+    if (!found) {
+        throw new Error('The radio group "' + name + '" does not have an option "' + value + '"');
     }
 }
 JS;
@@ -459,7 +574,7 @@ JS;
      */
     public function click($xpath)
     {
-        $this->browser->click(SeleniumLocator::xpath($xpath));
+        $this->browser->click(SeleniumLocator::xpath(utf8_decode($xpath)));
         $readyState = $this->browser->getEval('window.document.readyState');
 
         if ($readyState == 'loading' || $readyState == 'interactive') {
@@ -474,7 +589,7 @@ JS;
      */
     public function isChecked($xpath)
     {
-        return $this->browser->isChecked(SeleniumLocator::xpath($xpath));
+        return $this->browser->isChecked(SeleniumLocator::xpath(utf8_decode($xpath)));
     }
 
     /**
@@ -482,7 +597,7 @@ JS;
      */
     public function attachFile($xpath, $path)
     {
-        $this->browser->attachFile(SeleniumLocator::xpath($xpath), 'file://'.$path);
+        $this->browser->attachFile(SeleniumLocator::xpath(utf8_decode($xpath)), 'file://'.$path);
     }
 
     /**
@@ -498,7 +613,7 @@ JS;
      */
     public function doubleClick($xpath)
     {
-        $this->browser->doubleClick(SeleniumLocator::xpath($xpath));
+        $this->browser->doubleClick(SeleniumLocator::xpath(utf8_decode($xpath)));
     }
 
     /**
@@ -506,7 +621,7 @@ JS;
      */
     public function mouseOver($xpath)
     {
-        $this->browser->mouseOver(SeleniumLocator::xpath($xpath));
+        $this->browser->mouseOver(SeleniumLocator::xpath(utf8_decode($xpath)));
     }
 
     /**
@@ -515,7 +630,7 @@ JS;
     public function keyPress($xpath, $char, $modifier = null)
     {
         $this->keyDownModifier($modifier);
-        $this->browser->keyPress(SeleniumLocator::xpath($xpath), $char);
+        $this->browser->keyPress(SeleniumLocator::xpath(utf8_decode($xpath)), $char);
         $this->keyUpModifier($modifier);
     }
 
@@ -525,7 +640,7 @@ JS;
     public function keyDown($xpath, $char, $modifier = null)
     {
         $this->keyDownModifier($modifier);
-        $this->browser->keyDown(SeleniumLocator::xpath($xpath), $char);
+        $this->browser->keyDown(SeleniumLocator::xpath(utf8_decode($xpath)), $char);
         $this->keyUpModifier($modifier);
     }
 
@@ -535,7 +650,7 @@ JS;
     public function keyUp($xpath, $char, $modifier = null)
     {
         $this->keyDownModifier($modifier);
-        $this->browser->keyUp(SeleniumLocator::xpath($xpath), $char);
+        $this->browser->keyUp(SeleniumLocator::xpath(utf8_decode($xpath)), $char);
         $this->keyUpModifier($modifier);
     }
 
@@ -590,7 +705,7 @@ JS;
      */
     public function isVisible($xpath)
     {
-        return $this->browser->isVisible(SeleniumLocator::xpath($xpath));
+        return $this->browser->isVisible(SeleniumLocator::xpath(utf8_decode($xpath)));
     }
 
     /**
@@ -711,6 +826,6 @@ JS;
      */
     public function submitForm($xpath)
     {
-        $this->browser->submit(SeleniumLocator::xpath($xpath));
+        $this->browser->submit(SeleniumLocator::xpath(utf8_decode($xpath)));
     }
 }
