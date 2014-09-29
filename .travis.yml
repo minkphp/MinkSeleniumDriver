@@ -1,16 +1,16 @@
 language: php
 
-php: [5.3, 5.4, 5.5, 5.6, hhvm-nightly]
+php: [5.3, 5.4, 5.5, 5.6, hhvm]
 
 matrix:
   allow_failures:
-    - php: hhvm-nightly
+    - php: hhvm
   fast_finish: true
   include:
     - php: 5.5
       env: CRAWLER_VERSION='2.3.*'
     - php: 5.5
-      env: CRAWLER_VERSION='2.5.*@dev'
+      env: CRAWLER_VERSION='2.6.*@dev'
 
 env:
   global:
@@ -22,7 +22,7 @@ before_script:
   - export DISPLAY=:99.0
   - sleep 4
 
-  - curl -L http://selenium-release.storage.googleapis.com/2.41/selenium-server-standalone-2.41.0.jar > selenium.jar
+  - curl -L http://selenium-release.storage.googleapis.com/2.43/selenium-server-standalone-2.43.1.jar > selenium.jar
   - sudo ln -s /usr/lib/firefox/firefox /usr/lib/firefox/firefox-bin
   - PATH=$PATH:/usr/lib/firefox java -jar selenium.jar > /dev/null 2> /tmp/selenium_output.txt &
   - sleep 4
@@ -30,8 +30,8 @@ before_script:
   - sh -c 'if [ "$CRAWLER_VERSION" != "" ]; then composer require --no-update symfony/dom-crawler=$CRAWLER_VERSION; fi;'
   - composer install --dev --prefer-source
 
-  - sudo apt-get update > /dev/null
-  - sudo apt-get install -y --force-yes apache2 libapache2-mod-php5 > /dev/null
+  - sudo apt-get update -qq
+  - sudo apt-get install -y --force-yes apache2 libapache2-mod-php5
   - sudo sed -i -e "s,/var/www,$(pwd)/vendor/behat/mink/driver-testsuite/web-fixtures,g" /etc/apache2/sites-available/default
   - sudo /etc/init.d/apache2 restart
 
